@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Common;
 using Common.Exception;
@@ -91,7 +92,7 @@ namespace WebAPI_Server.Middleware
                 await HandleApiAppExceptionAsync(httpContext, ex);
             }
             catch (Exception ex)
-                {
+            {
                 _logger.LogCritical("{@Exception}", ex);
                 await HandleExceptionAsync(httpContext, ex);
             }
@@ -130,8 +131,10 @@ namespace WebAPI_Server.Middleware
 
         private static Task HandleUnauthorizedAsync(HttpContext context)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            if (!(context.Response.ContentType == "application/problem+json; charset=utf-8" || context.Response.ContentType == "application/json"))
+                context.Response.ContentType = "application/json";
+            if (context.Response.StatusCode != StatusCodes.Status401Unauthorized)
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
             return context.Response.WriteAsync(JsonConvert.SerializeObject(new ApiResponse(false,
                 ErrorMessages.UnAuthorized)));

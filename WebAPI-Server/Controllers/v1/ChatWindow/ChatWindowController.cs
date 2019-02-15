@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Common;
+using Common.Exception;
 using Common.Messages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -82,12 +83,13 @@ namespace WebAPI_Server.Controllers.v1
             {
                 var websiteInfoData = websiteInfo.FirstOrDefault();
                 if (websiteInfoData == null)
-                    return StatusCodeResult(StatusCodes.Status401Unauthorized, null, ErrorMessages.UnAuthorized);
+                    throw new WebApiApplicationException(StatusCodes.Status401Unauthorized, ErrorMessages.UnAuthorized);
 
                 JwtToken accessToken = await Tokens.GenerateJwtForChat(websiteInfoData, _jwtFactory, _jwtChatOptions, originValue);
                 return Ok(accessToken, InfoMessages.CommonInfoMessage);
             }
-            return StatusCodeResult(StatusCodes.Status401Unauthorized, null, ErrorMessages.UnAuthorized);
+
+            throw new WebApiApplicationException(StatusCodes.Status401Unauthorized, ErrorMessages.UnAuthorized);
         }
     }
 }

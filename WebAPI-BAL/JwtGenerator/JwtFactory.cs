@@ -20,11 +20,14 @@ namespace WebAPI_BAL.JwtGenerator
     public class JwtFactory : IJwtFactory
     {
         private readonly JwtIssuerOptions _jwtOptions;
+        private readonly JwtChatIssuerOptions _jwtChatOptions;
 
-        public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions)
+        public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions, IOptions<JwtChatIssuerOptions> jwtChatOptions)
         {
             _jwtOptions = jwtOptions.Value;
+            _jwtChatOptions = jwtChatOptions.Value;
             ThrowIfInvalidOptions(_jwtOptions);
+            ThrowIfInvalidOptions(_jwtChatOptions);
         }
 
         public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity, string audience)
@@ -73,13 +76,13 @@ namespace WebAPI_BAL.JwtGenerator
 
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(
-                issuer: _jwtOptions.Issuer,
+                issuer: _jwtChatOptions.Issuer,
                 audience: audience,
                 //audience: _jwtOptions.Audience,
                 claims: claims,
-                notBefore: _jwtOptions.NotBefore,
-                expires: _jwtOptions.Expiration,
-                signingCredentials: _jwtOptions.SigningCredentials);
+                notBefore: _jwtChatOptions.NotBefore,
+                expires: _jwtChatOptions.Expiration,
+                signingCredentials: _jwtChatOptions.SigningCredentials);
 
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
@@ -113,7 +116,7 @@ namespace WebAPI_BAL.JwtGenerator
                                new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
                               .TotalSeconds);
 
-        private static void ThrowIfInvalidOptions(JwtIssuerOptions options)
+        private static void ThrowIfInvalidOptions(IJwtOptions options)
         {
             if (options == null) throw new ArgumentNullException(nameof(options));
 

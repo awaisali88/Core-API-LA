@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI_BAL.JwtGenerator
 {
-    public class JwtIssuerOptions
+    public class JwtIssuerOptions : IJwtOptions
     {
         /// <summary>
         /// 4.1.1.  "iss" (Issuer) Claim - The "iss" (issuer) claim identifies the principal that issued the JWT.
@@ -53,5 +53,13 @@ namespace WebAPI_BAL.JwtGenerator
         /// The signing key to use when generating tokens.
         /// </summary>
         public SigningCredentials SigningCredentials { get; set; }
+    }
+
+    public interface IJwtOptions
+    {
+        TimeSpan ValidFor { get; set; }
+        SigningCredentials SigningCredentials { get; set; }
+
+        Func<Task<string>> JtiGenerator { get; }
     }
 }

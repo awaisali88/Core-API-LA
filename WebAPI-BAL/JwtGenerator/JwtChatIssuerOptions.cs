@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace WebAPI_BAL.JwtGenerator
 {
-    public class JwtChatIssuerOptions
+    public class JwtChatIssuerOptions : IJwtOptions
     {
         /// <summary>
         /// 4.1.1.  "iss" (Issuer) Claim - The "iss" (issuer) claim identifies the principal that issued the JWT.
